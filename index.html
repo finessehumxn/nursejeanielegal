@@ -449,7 +449,13 @@
     .sample-gap { background: #FEE2E2; border-left: 3px solid #DC2626; padding: 6px 10px; font-size: 11px; color: #991B1B; border-radius: 0 4px 4px 0; margin-top: 4px; }
     .sample-good { background: #DCFCE7; border-left: 3px solid #16A34A; padding: 6px 10px; font-size: 11px; color: #166534; border-radius: 0 4px 4px 0; margin-top: 4px; }
     .sample-redacted { background: var(--ink); color: var(--ink); border-radius: 2px; display: inline; padding: 0 4px; font-size: 11px; user-select: none; }
-    @media(max-width:700px){ .deliv-grid{grid-template-columns:1fr} .sample-preview{padding:1.25rem} }
+    @media(max-width:700px){
+      .deliv-grid{grid-template-columns:1fr}
+      .sample-preview{padding:1.25rem}
+      .sample-doc{padding:1.15rem}
+      .sample-row{flex-direction:column;gap:3px;margin-bottom:14px}
+      .sample-date{width:auto;font-weight:600;padding-top:0}
+    }
 
 
     /* ── STICKY FLOATING CTA ─────────────────────────────────────── */

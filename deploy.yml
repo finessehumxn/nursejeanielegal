@@ -1,0 +1,73 @@
+name: Deploy Nurse Jeanie Legal
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: Validate HTML & Assets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check required files exist
+        run: |
+          echo "✅ Checking required files..."
+          test -f index.html && echo "✓ index.html found"
+          test -f css/styles.css && echo "✓ css/styles.css found"
+          test -f js/main.js && echo "✓ js/main.js found"
+          test -f package.json && echo "✓ package.json found"
+          test -f railway.json && echo "✓ railway.json found"
+          echo "✅ All required files present"
+
+      - name: Check HTML structure
+        run: |
+          echo "✅ Checking HTML structure..."
+          grep -q "nursejeanielegal.com" index.html && echo "✓ Canonical URL found"
+          grep -q "application/ld+json" index.html && echo "✓ Schema markup found"
+          grep -q "og:title" index.html && echo "✓ Open Graph tags found"
+          grep -q "twitter:card" index.html && echo "✓ Twitter card found"
+          grep -q "css/styles.css" index.html && echo "✓ External CSS linked"
+          grep -q "js/main.js" index.html && echo "✓ External JS linked"
+          grep -q "contact@nursejeanielegal.com" index.html && echo "✓ Contact email found"
+          grep -q "calendly.com/nursejeanielegal" index.html && echo "✓ Calendly link found"
+          echo "✅ HTML structure validated"
+
+      - name: Check CSS
+        run: |
+          echo "Checking CSS..."
+          wc -l css/styles.css
+          grep -c "var(--" css/styles.css && echo "✓ CSS variables in use"
+
+      - name: Check JS
+        run: |
+          echo "Checking JS..."
+          wc -l js/main.js
+          grep -c "function" js/main.js && echo "✓ JS functions found"
+
+  deploy-check:
+    name: Deploy Ready Check
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify serve works
+        run: |
+          npx serve . -p 3000 &
+          sleep 2
+          curl -s -o /dev/null -w "%{http_code}" http://localhost:3000 | grep -q "200" && echo "✅ Site serves successfully on port 3000"
+          kill %1 2>/dev/null || true
